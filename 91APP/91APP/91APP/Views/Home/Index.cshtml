@@ -1,0 +1,73 @@
+﻿<div class="row" id="title"> Order List </div>
+<div class="row"> &nbsp; </div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Order Id</th>
+                    <th scope="col">Order Item</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.orders)
+                {
+                    <tr>
+                        <td name="check">
+                            <input type="checkbox" name="items" value=@item.Id>
+                        </td>
+                        <td>@item.Id</td>
+                        <td>
+                            <a href="@string.Format("https://localhost:44331/Home/About?id={0}", @item.Id)" id="Detail" target="_blank">@item.Item</a>
+                        </td>
+                        <td>@item.Price</td>
+                        <td>@item.Cost</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row" id="btn">
+    <input type="button" class="btn btn-primary" id="myAjaxButton" value="Confirm" />
+</div>
+
+<script type="text/javascript">
+    $("#myAjaxButton").click(function (event) {
+        var clicks = document.getElementsByTagName('input');
+        var updateOrders = [];
+    
+        for (var i = 0; i < clicks.length; i++)
+        {
+            if (clicks[i].name == "items" && clicks[i].checked)
+            {
+                updateOrders.push(clicks[i].value);
+            }
+        }
+    
+        //alert(clicks.length);
+        //alert(updateOrders);
+    
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Index", "Home")",
+            data: {
+                updateOrders: updateOrders
+            },
+            success: function (result) {
+                alert('success');
+                setTimeout(function () {
+                    location.reload();
+                }, 100);
+            },
+            error: function(result) {
+                alert('error');
+            }
+        });
+    });
+</script>

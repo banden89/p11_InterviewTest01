@@ -1,0 +1,9 @@
+﻿<div class="row"><h1>DETAILS</h1></div>
+@foreach (var item in ViewBag.orders)
+{
+    <h2>OrderID: @item.Id</h2>
+    <h2>Order Item: @item.Item</h2>
+    <h2>Price: @item.Price</h2>
+    <h2>Cost: @item.Cost</h2>
+    <h2>Status: @item.Status</h2>
+}

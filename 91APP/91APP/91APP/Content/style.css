@@ -1,0 +1,38 @@
+﻿#main_container {
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 2px;
+    background-color: #4BACC6;
+}
+
+#title {
+    padding-top: 10px;
+    padding-left: 10px;
+    color: #ffffff;
+    font-size: 20px;
+}
+
+thead {
+    color: #ffffff;
+}
+
+tbody {
+    font-weight: bold;
+}
+
+tbody tr:nth-child(odd) {
+    background: #D1DFEF;
+}
+
+tbody tr:nth-child(even) {
+    background: #E9EFF7;
+}
+
+#check {
+    vertical-align: middle;
+}
+
+#btn {
+    padding-left: 15px;
+    padding-bottom: 10px;
+}
