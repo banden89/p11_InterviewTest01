@@ -1,0 +1,23 @@
+﻿@model _91APP.Models.Account
+
+<div>
+    <h1>Login Form</h1>
+</div>
+
+<div>
+    <form action="Login" method="post">
+        <div>
+            <input placeholder="E-mail" name="Email" type="email" required="">
+        </div>
+        <div>
+            <input placeholder="Password" name="Password" type="password" required="">
+        </div>
+        <div>
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+        </div>
+        <div>
+            <input type="submit" class="btn btn-warning" value="Login">
+        </div>
+    </form>
+</div>
+

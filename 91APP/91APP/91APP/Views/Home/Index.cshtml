@@ -1,5 +1,9 @@
-﻿<div class="row" id="title"> Order List </div>
-<div class="row"> &nbsp; </div>
+﻿<div class="row" id="title"> 
+    Order List 
+</div>
+<div class="row"> 
+    &nbsp; 
+</div>
 <div class="row">
     <div class="col-12">
         <table class="table table-bordered">
@@ -18,7 +22,14 @@
                 {
                     <tr>
                         <td name="check">
-                            <input type="checkbox" name="items" value=@item.Id>
+                            @if (item.Status == "To be shipped")
+                            {
+                                <input type="checkbox" name="items" disabled>
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="items" value=@item.Id>
+                            }                            
                         </td>
                         <td>@item.Id</td>
                         <td>
@@ -49,9 +60,6 @@
                 updateOrders.push(clicks[i].value);
             }
         }
-    
-        //alert(clicks.length);
-        //alert(updateOrders);
     
         $.ajax({
             type: "POST",

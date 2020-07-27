@@ -10,6 +10,7 @@ using _91APP.Models;
 
 namespace _91APP.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         string strConnString = ConfigurationManager.ConnectionStrings["connect"].ConnectionString;
@@ -55,20 +56,51 @@ namespace _91APP.Controllers
                 return null;
             }
 
-            string updatecomm = "";
+            string comm = "";
 
             using (SqlConnection conn = new SqlConnection(strConnString))
-            {
-                conn.Open();                
+            {                
+                conn.Open();
 
-                for(int i = 0; i < updateOrders.Length; i++)
+                //流水編號
+                DataTable MaxIdDt = new DataTable();
+                long ID_SerialNO = 0;
+
+                comm = "SELECT MAX(CONVERT(BIGINT, SUBSTRING([Id], 3, 12))) AS [Id] FROM [dbo].[ShippingOrder]";
+                SqlCommand scom = new SqlCommand(comm, conn);
+                SqlDataReader sread = scom.ExecuteReader();
+                MaxIdDt.Load(sread);
+
+                if (MaxIdDt.Rows[0]["Id"].ToString() == "")
+                { 
+                    ID_SerialNO = 0;
+                }
+                else
                 {
-                    updatecomm += "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
+                    long maxID = long.Parse(MaxIdDt.Rows[0]["Id"].ToString());
+                    if ((maxID / 10000) < Int32.Parse(DateTime.Now.ToString("yyyyMMdd")))
+                    {               
+                        ID_SerialNO = 1;
+                    }
+                    else
+                    {                              
+                        ID_SerialNO = maxID % 10000;
+                    }
                 }
 
-                SqlCommand scom = new SqlCommand(updatecomm, conn);
+                comm = "";
 
-                scom.ExecuteNonQuery();
+                for (int i = 0; i < updateOrders.Length; i++)
+                {
+                    ID_SerialNO += 1;
+                    string str_serialID = ID_SerialNO.ToString("0000.##");
+
+                    comm += "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
+                    comm += "INSERT INTO [dbo].[ShippingOrder] ([Id], [OrderId], [Status], [CreatedDateTime]) VALUES ('SO" + DateTime.Now.ToString("yyyyMMdd") + str_serialID + "', '" + updateOrders[i] + "', 'New', CONVERT(varchar, GETDATE(), 120)); ";
+                }
+
+                SqlCommand sscom = new SqlCommand(comm, conn);
+                sscom.ExecuteNonQuery();
 
                 conn.Close();
             }
@@ -76,10 +108,9 @@ namespace _91APP.Controllers
             return null;
         }
 
+        [HttpGet]
         public ActionResult About(string id)
         {
-            //ViewBag.Message = "Your application description page.";
-
             List<Order> OrderLists = new List<Order>();
             DataTable tableReader = new DataTable();
 
@@ -100,7 +131,6 @@ namespace _91APP.Controllers
                 order.Status = tableReader.Rows[0]["Status"].ToString();
                 OrderLists.Add(order);
                 
-
                 conn.Close();
             }
 
@@ -108,12 +138,5 @@ namespace _91APP.Controllers
 
             return View();
         }
-
-        //public ActionResult Contact()
-        //{
-        //    ViewBag.Message = "Your contact page.";
-
-        //    return View();
-        //}
     }
 }
