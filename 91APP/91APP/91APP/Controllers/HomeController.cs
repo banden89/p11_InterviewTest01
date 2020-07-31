@@ -21,10 +21,10 @@ namespace _91APP.Controllers
             DataTable tableReader = new DataTable();      
 
             using (SqlConnection conn = new SqlConnection(strConnString))
-            {
-                conn.Open();
+            {                
                 SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table]", conn);
 
+                conn.Open();
                 SqlDataReader sread = scom.ExecuteReader(CommandBehavior.CloseConnection);
 
                 tableReader.Load(sread);
@@ -59,15 +59,15 @@ namespace _91APP.Controllers
             string comm = "";
 
             using (SqlConnection conn = new SqlConnection(strConnString))
-            {                
-                conn.Open();
-
-                //流水編號
+            {
+                #region 流水編號處理
                 DataTable MaxIdDt = new DataTable();
                 long ID_SerialNO = 0;
 
                 comm = "SELECT MAX(CONVERT(BIGINT, SUBSTRING([Id], 3, 12))) AS [Id] FROM [dbo].[ShippingOrder]";
                 SqlCommand scom = new SqlCommand(comm, conn);
+
+                conn.Open();
                 SqlDataReader sread = scom.ExecuteReader();
                 MaxIdDt.Load(sread);
 
@@ -87,6 +87,7 @@ namespace _91APP.Controllers
                         ID_SerialNO = maxID % 10000;
                     }
                 }
+                #endregion
 
                 comm = "";
 

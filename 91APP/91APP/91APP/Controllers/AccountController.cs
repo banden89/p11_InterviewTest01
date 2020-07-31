@@ -32,8 +32,13 @@ namespace _91APP.Controllers
 
             using (SqlConnection conn = new SqlConnection(strConnString))
             {
+                //SQL injection 改用SQL Parameter避免之
+                //SqlCommand com = new SqlCommand("SELECT * FROM [dbo].[Members] WHERE Email='" + acc.Email + "' AND Password='" + acc.Password + "';", conn);
+                SqlCommand com = new SqlCommand("SELECT * FROM [dbo].[Members] WHERE Email = @Email AND Password = @Password;", conn);
+                com.Parameters.AddWithValue("@Email", acc.Email);
+                com.Parameters.AddWithValue("@Password", acc.Password);
+
                 conn.Open();
-                SqlCommand com = new SqlCommand("SELECT * FROM [dbo].[Members] WHERE Email='" + acc.Email + "' AND Password='" + acc.Password + "';", conn);
                 SqlDataReader sread = com.ExecuteReader();
                 tb.Load(sread);
                 conn.Close();
@@ -73,27 +78,5 @@ namespace _91APP.Controllers
                 return View();
             }
         }
-
-        //[HttpPost]
-        //public ActionResult Verify(Account acc)
-        //{
-        //    using (SqlConnection conn = new SqlConnection(strConnString))
-        //    {
-        //        conn.Open();
-        //        SqlCommand com = new SqlCommand("SELECT * FROM [dbo].[Members] WHERE Email='" + acc.Email + "' AND Password='" + acc.Password + "';", conn);
-        //        SqlDataReader sread = com.ExecuteReader(CommandBehavior.CloseConnection);
-
-        //        if(sread.Read())
-        //        {
-        //            conn.Close();
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else 
-        //        {
-        //            conn.Close();
-        //            return View("~/Views/Shared/Error.cshtml");
-        //        }
-        //    }
-        //}
     }
 }
