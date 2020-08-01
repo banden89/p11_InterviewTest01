@@ -47,6 +47,35 @@
 <div class="row" id="btn">
     <input type="button" class="btn btn-primary" id="myAjaxButton" value="Confirm" />
 </div>
+<div class="row">
+    &nbsp;
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Order Id</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">CreatedDateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.shiporders)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.OrderId</td>
+                        <td>@item.Status</td>
+                        <td>@item.CreatedDateTime</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <script type="text/javascript">
     $("#myAjaxButton").click(function (event) {

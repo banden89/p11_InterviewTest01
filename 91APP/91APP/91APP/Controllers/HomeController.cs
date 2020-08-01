@@ -18,14 +18,15 @@ namespace _91APP.Controllers
         public ActionResult Index()
         {
             List<Order> OrderLists = new List<Order>();
+            List<ShipOrder> ShipOrderLists = new List<ShipOrder>();
             DataTable tableReader = new DataTable();      
 
             using (SqlConnection conn = new SqlConnection(strConnString))
-            {                
-                SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table]", conn);
-
+            {
                 conn.Open();
-                SqlDataReader sread = scom.ExecuteReader(CommandBehavior.CloseConnection);
+                                
+                SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table]", conn);            
+                SqlDataReader sread = scom.ExecuteReader();
 
                 tableReader.Load(sread);
 
@@ -40,10 +41,28 @@ namespace _91APP.Controllers
                     OrderLists.Add(order);
                 }
 
+                tableReader.Reset();
+
+                scom.CommandText = "SELECT * FROM [dbo].[ShippingOrder]";
+                sread = scom.ExecuteReader();
+                tableReader.Load(sread);
+
+                for (int i = 0; i < tableReader.Rows.Count; i++)
+                {
+                    ShipOrder shiporder = new ShipOrder();
+                    shiporder.Id = tableReader.Rows[i]["Id"].ToString();
+                    shiporder.OrderId = tableReader.Rows[i]["OrderId"].ToString();
+                    shiporder.Status = tableReader.Rows[i]["Status"].ToString();
+                    shiporder.CreatedDateTime = tableReader.Rows[i]["CreatedDateTime"].ToString();
+
+                    ShipOrderLists.Add(shiporder);
+                }
+
                 conn.Close();
             }
 
             ViewBag.orders = OrderLists;
+            ViewBag.shiporders = ShipOrderLists;
 
             return View();
         }
@@ -88,8 +107,6 @@ namespace _91APP.Controllers
                     }
                 }
                 #endregion
-
-                comm = "";
 
                 //使用SQL Transaction確保存取DB時能完整執行
                 SqlTransaction transaction;
@@ -143,7 +160,7 @@ namespace _91APP.Controllers
                 conn.Open();
                 SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table] WHERE [Id] = '" + id + "';", conn);
 
-                SqlDataReader sread = scom.ExecuteReader(CommandBehavior.CloseConnection);
+                SqlDataReader sread = scom.ExecuteReader();
 
                 tableReader.Load(sread);
 

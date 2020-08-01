@@ -13,4 +13,12 @@ namespace _91APP.Models
         public int Cost { get; set; }
         public string Status { get; set; }
     }
+
+    public class ShipOrder
+    {
+        public string Id { get; set; }
+        public string OrderId { get; set; }
+        public string Status { get; set; }
+        public string CreatedDateTime { get; set; }
+    }
 }
