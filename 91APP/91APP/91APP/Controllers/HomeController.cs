@@ -80,7 +80,7 @@ namespace _91APP.Controllers
                     long maxID = long.Parse(MaxIdDt.Rows[0]["Id"].ToString());
                     if ((maxID / 10000) < Int32.Parse(DateTime.Now.ToString("yyyyMMdd")))
                     {               
-                        ID_SerialNO = 1;
+                        ID_SerialNO = 0;
                     }
                     else
                     {                              
@@ -91,17 +91,40 @@ namespace _91APP.Controllers
 
                 comm = "";
 
-                for (int i = 0; i < updateOrders.Length; i++)
+                //使用SQL Transaction確保存取DB時能完整執行
+                SqlTransaction transaction;
+                transaction = conn.BeginTransaction("UpdateInsertTransaction");
+                scom.Transaction = transaction;
+
+                try
                 {
-                    ID_SerialNO += 1;
-                    string str_serialID = ID_SerialNO.ToString("0000.##");
+                    for (int i = 0; i < updateOrders.Length; i++)
+                    {
+                        ID_SerialNO += 1;
+                        string str_serialID = ID_SerialNO.ToString("0000.##");
 
-                    comm += "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
-                    comm += "INSERT INTO [dbo].[ShippingOrder] ([Id], [OrderId], [Status], [CreatedDateTime]) VALUES ('SO" + DateTime.Now.ToString("yyyyMMdd") + str_serialID + "', '" + updateOrders[i] + "', 'New', CONVERT(varchar, GETDATE(), 120)); ";
+                        scom.CommandText = "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
+                        scom.ExecuteNonQuery();
+                        scom.CommandText = "INSERT INTO [dbo].[ShippingOrder] ([Id], [OrderId], [Status], [CreatedDateTime]) VALUES ('SO" + DateTime.Now.ToString("yyyyMMdd") + str_serialID + "', '" + updateOrders[i] + "', 'New', CONVERT(varchar, GETDATE(), 120)); ";
+                        scom.ExecuteNonQuery();                                         
+                    }
+                    transaction.Commit();
                 }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
+                    Console.WriteLine("Message: {0}", ex.Message);
 
-                SqlCommand sscom = new SqlCommand(comm, conn);
-                sscom.ExecuteNonQuery();
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception ex2)
+                    {
+                        Console.WriteLine("Rollback Exception Type: {0}", ex2.GetType());
+                        Console.WriteLine("Message: {0}", ex2.Message);
+                    }
+                }
 
                 conn.Close();
             }

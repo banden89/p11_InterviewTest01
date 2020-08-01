@@ -48,12 +48,14 @@ namespace _91APP.Controllers
                         .AsEnumerable()
                         .FirstOrDefault(x => x.Field<string>("Email") == acc.Email);
 
+            //DB是否有此會員
             if (user == null)
             {
                 ModelState.AddModelError("Password", "請輸入正確的帳號或密碼!");
                 return View(acc);
             }
 
+            //DB有此會員 密碼檢查
             if (user.Field<string>("Password").Equals(acc.Password))
             {
                 var now = DateTime.Now;
