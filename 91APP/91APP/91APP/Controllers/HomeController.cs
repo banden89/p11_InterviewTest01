@@ -108,7 +108,7 @@ namespace _91APP.Controllers
                 }
                 #endregion
 
-                //使用SQL Transaction確保存取DB時能完整執行
+                //使用SQL Transaction確保存取DB時能完整執行.
                 #region 方法一:C# ADO.NET Transaction 機制
                 SqlTransaction transaction;
                 transaction = conn.BeginTransaction("UpdateInsertTransaction");
