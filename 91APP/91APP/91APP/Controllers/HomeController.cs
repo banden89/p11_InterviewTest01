@@ -109,6 +109,7 @@ namespace _91APP.Controllers
                 #endregion
 
                 //使用SQL Transaction確保存取DB時能完整執行
+                #region 方法一:C# ADO.NET Transaction 機制
                 SqlTransaction transaction;
                 transaction = conn.BeginTransaction("UpdateInsertTransaction");
                 scom.Transaction = transaction;
@@ -123,11 +124,11 @@ namespace _91APP.Controllers
                         scom.CommandText = "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
                         scom.ExecuteNonQuery();
                         scom.CommandText = "INSERT INTO [dbo].[ShippingOrder] ([Id], [OrderId], [Status], [CreatedDateTime]) VALUES ('SO" + DateTime.Now.ToString("yyyyMMdd") + str_serialID + "', '" + updateOrders[i] + "', 'New', CONVERT(varchar, GETDATE(), 120)); ";
-                        scom.ExecuteNonQuery();                                         
+                        scom.ExecuteNonQuery();
                     }
                     transaction.Commit();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
                     Console.WriteLine("Message: {0}", ex.Message);
@@ -142,6 +143,35 @@ namespace _91APP.Controllers
                         Console.WriteLine("Message: {0}", ex2.Message);
                     }
                 }
+                #endregion
+
+                #region 方法二:T-SQL Transaction 機制
+                //try
+                //{
+                //    scom.CommandText = @"BEGIN TRY
+                //                            BEGIN TRANSACTION ";
+
+                //    for (int i = 0; i < updateOrders.Length; i++)
+                //    {
+                //        ID_SerialNO += 1;
+                //        string str_serialID = ID_SerialNO.ToString("0000.##");
+
+                //        scom.CommandText += "UPDATE [dbo].[Table] SET [Status] = 'To be shipped' WHERE [Id] = '" + updateOrders[i] + "';";
+                //        scom.CommandText += "INSERT INTO [dbo].[ShippingOrder] ([Id], [OrderId], [Status], [CreatedDateTime]) VALUES ('SO" + DateTime.Now.ToString("yyyyMMdd") + str_serialID + "', '" + updateOrders[i] + "', 'New', CONVERT(varchar, GETDATE(), 120)); ";
+                //    }
+                //    scom.CommandText += @"  COMMIT TRANSACTION
+                //                          END TRY
+                //                          BEGIN CATCH
+                //                            ROLLBACK TRANSACTION
+                //                          END CATCH";
+                //    scom.ExecuteNonQuery();
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine("Commit Exception Type: {0}", ex.GetType());
+                //    Console.WriteLine("Message: {0}", ex.Message);
+                //}
+                #endregion
 
                 conn.Close();
             }
