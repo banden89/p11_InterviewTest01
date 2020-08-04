@@ -1,8 +1,10 @@
-﻿<div class="row" id="title"> 
-    Order List 
+﻿@Html.AntiForgeryToken()
+
+<div class="row" id="title">
+    Order List
 </div>
-<div class="row"> 
-    &nbsp; 
+<div class="row">
+    &nbsp;
 </div>
 <div class="row">
     <div class="col-12">
@@ -29,7 +31,7 @@
                             else
                             {
                                 <input type="checkbox" name="items" value=@item.Id>
-                            }                            
+                            }
                         </td>
                         <td>@item.Id</td>
                         <td>
@@ -81,7 +83,7 @@
     $("#myAjaxButton").click(function (event) {
         var clicks = document.getElementsByTagName('input');
         var updateOrders = [];
-    
+
         for (var i = 0; i < clicks.length; i++)
         {
             if (clicks[i].name == "items" && clicks[i].checked)
@@ -89,7 +91,7 @@
                 updateOrders.push(clicks[i].value);
             }
         }
-    
+
         $.ajax({
             type: "POST",
             url: "@Url.Action("Index", "Home")",

@@ -187,9 +187,13 @@ namespace _91APP.Controllers
 
             using (SqlConnection conn = new SqlConnection(strConnString))
             {
-                conn.Open();
-                SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table] WHERE [Id] = '" + id + "';", conn);
+                
+                //SQL injection 改用SQL Parameter避免之
+                //SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table] WHERE [Id] = '" + id + "';", conn);
+                SqlCommand scom = new SqlCommand("SELECT * FROM [dbo].[Table] WHERE [Id] = @id;", conn);
+                scom.Parameters.AddWithValue("@id", id);
 
+                conn.Open();
                 SqlDataReader sread = scom.ExecuteReader();
 
                 tableReader.Load(sread);
